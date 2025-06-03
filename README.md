@@ -6,6 +6,9 @@
 # 1. 安装环境
 python setup_env.py
 
-# 2. 启动开发服务
+# 2. 激活虚拟环境
+venv/Scripts/activate
+
+# 3. 启动开发服务
 uvicorn app.main:app --reload
 ```
