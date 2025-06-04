@@ -4,11 +4,11 @@
 
 ```bash
 # 1. 安装环境
-python setup_env.py
+python -m scripts.setup_env
 
-# 2. 激活虚拟环境
-venv/Scripts/activate
-
-# 3. 启动开发服务
+# 2. 启动开发服务
 uvicorn app.main:app --reload
+
+# 3. 初始化sqlite
+python -m scripts.execute_sql_file
 ```

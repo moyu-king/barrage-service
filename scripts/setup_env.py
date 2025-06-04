@@ -3,7 +3,6 @@ import sys
 import platform
 import subprocess
 
-
 def main():
     # 1. 创建虚拟环境
     venv_name = "venv"
@@ -38,9 +37,9 @@ def main():
     print("✅ 完成！虚拟环境已创建并安装依赖。")
     print("👉 手动激活命令:")
     if platform.system() == "Windows":
-        print(f"    {os.path.join(venv_name, 'Scripts', 'activate')}")
+        print(f"{os.path.join(venv_name, 'Scripts', 'activate')}")
     else:
-        print(f"    source {os.path.join(venv_name, 'bin', 'activate')}")
+        print(f"source {os.path.join(venv_name, 'bin', 'activate')}")
 
 
 if __name__ == "__main__":

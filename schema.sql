@@ -1,0 +1,1 @@
+CREATE TABLE "video" ("id" INTEGER NOT NULL PRIMARY KEY, "name" VARCHAR(255) NOT NULL, "request_params" VARCHAR(255) NOT NULL, "platform" INTEGER NOT NULL);

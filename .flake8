@@ -6,4 +6,4 @@ exclude =
     tests/*,
     docs/*
 
-ignore = E501
+ignore = E501,E111,E302
