@@ -1,7 +1,8 @@
 from aiohttp import ClientSession
 from typing import Union
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from app.service.DanmuFetcher import DanmuFetcher
 
 tencent_router = APIRouter()
 
@@ -12,11 +13,19 @@ class EpisodePayload(BaseModel):
 
 # https://dm.video.qq.com/barrage/segment/e0018sdzesg/t/v1/390000/420000
 # 获取弹幕
+# duration 视频时长
 @tencent_router.post("/barrage")
-async def tencent_barrage(time_offset1: str, time_offset2: str):
-    async with ClientSession() as session:
-        response = await session.get("https://dm.video.qq.com/barrage/segment/e0018sdzesg/t/v1/" + time_offset1 + "/" + time_offset2)
-        return barrage_response(await response.json())
+async def tencent_barrage(duration: int):
+    try:
+        fetcher = DanmuFetcher()
+        # 获取所有弹幕
+        danmus = await fetcher.fetch_all(duration * 2)
+        if not danmus:
+            raise HTTPException(status_code=500, detail="弹幕数据获取失败")
+        # 后续再优化统一返回格式
+        return danmus
+    except Exception as e:
+        raise HTTPException(status_code=404, detail="弹幕数据获取失败")
 
 
 # 获取集数
@@ -47,25 +56,8 @@ async def tencent_episodes(payload: EpisodePayload):
         return episode_response(await response.json(), payload.pageContext)
 
 
-# 弹幕
-def barrage_response(response):
 
-    json_data = {}
-    json_txt = {
-        'barrages': []
-    }
-    json_data['data'] = json_txt
-    barrages = []
 
-    items = response['barrage_list']
-    for item in items:
-        barrage = {}
-        barrage['time_offset'] = item['time_offset']
-        barrage['content'] = item['content']
-        barrages.append(barrage)
-
-    json_txt['barrages'] = barrages
-    return json_data
 
 # 集数
 def episode_response(response, pageContext):
