@@ -1,11 +1,6 @@
-from peewee import SqliteDatabase, Model, CharField, IntegerField
-from app.constant import db_path
-
-db = SqliteDatabase(db_path)
-
-class BaseModel(Model):
-    class Meta:
-        database = db
+from peewee import CharField, IntegerField
+from app.models.base import BaseModel
+from app.db import db
 
 class Video(BaseModel):
     name = CharField()
