@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "Barrage Service Debug",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",
+        "--reload"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "python": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+      "justMyCode": false
+    }
+  ]
+}
