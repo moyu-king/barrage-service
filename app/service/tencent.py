@@ -11,7 +11,6 @@ class EpisodePayload(BaseModel):
     vid: Union[str, None]
     pageContext: Union[str, None] = None
 
-# https://dm.video.qq.com/barrage/segment/e0018sdzesg/t/v1/390000/420000
 # 获取弹幕
 # duration 视频时长
 @tencent_router.post("/barrage")
@@ -24,7 +23,7 @@ async def tencent_barrage(duration: int):
             raise HTTPException(status_code=500, detail="弹幕数据获取失败")
         # 后续再优化统一返回格式
         return danmus
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=404, detail="弹幕数据获取失败")
 
 
@@ -56,20 +55,17 @@ async def tencent_episodes(payload: EpisodePayload):
         return episode_response(await response.json(), payload.pageContext)
 
 
-
-
-
 # 集数
-def episode_response(response, pageContext):
-
+def episode_response(response):
     json_data = {}
     episodes = []
 
     module_list_data = response['data']['module_list_datas'][0]
     item_datas = module_list_data['module_datas'][0]['item_data_lists']['item_datas']
-    for item in item_datas:
 
+    for item in item_datas:
         item_params = item['item_params']
+
         if 'cid' in item_params:
             episode = {}
             episode['cid'] = item_params['cid']
@@ -79,11 +75,5 @@ def episode_response(response, pageContext):
             episodes.append(episode)
 
     json_data['data'] = episodes
-    json_data['pageContext'] = pageContext
+
     return json_data
-
-
-async def get_tencent_barrages():
-    async with ClientSession() as session:
-        response = await session.get("https://dm.video.qq.com/barrage/segment/e0018sdzesg/t/v1/390000/420000")
-        return await response.json()
