@@ -22,41 +22,19 @@ class DanmuFetcher:
                     f"{self.BASE_URL}/{time_end}/{time_begin}"
                 ) as resp:
                     response = await resp.json()
-
-                    # 直接调组装返回报文方法，但报错，后续再研究
-                    # return await self.barrage_response(response)
-
-                    json_data = {}
-                    json_txt = {"barrages": []}
-                    json_data["data"] = json_txt
                     barrages = []
 
                     items = response["barrage_list"]
                     for item in items:
                         barrage = {}
+                        barrage["up_count"] = item["up_count"]
+                        barrage["content_style"] = item["content_style"]
+                        barrage["content_score"] = item["content_score"]
                         barrage["time_offset"] = item["time_offset"]
                         barrage["content"] = item["content"]
                         barrages.append(barrage)
 
-                    json_txt["barrages"] = barrages
-                    return json_data
+                    return barrages
             except Exception:
-                return ["弹幕数据获取异常"]
+                return []
 
-    # 弹幕组装返回报文
-    async def barrage_response(response):
-        print(f"----------response：{response}")
-        json_data = {}
-        json_txt = {"barrages": []}
-        json_data["data"] = json_txt
-        barrages = []
-
-        items = response["barrage_list"]
-        for item in items:
-            barrage = {}
-            barrage["time_offset"] = item["time_offset"]
-            barrage["content"] = item["content"]
-            barrages.append(barrage)
-
-        json_txt["barrages"] = barrages
-        return json_data
