@@ -1,10 +1,12 @@
-from peewee import CharField, IntegerField
+from peewee import CharField, IntegerField, AutoField
+from playhouse.sqlite_ext import JSONField
 from app.models.base import BaseModel
 from app.db import db
 
 class Video(BaseModel):
+    id = AutoField()
     name = CharField()
-    request_params = CharField()
+    params = JSONField()
     platform = IntegerField()
 
 

@@ -1,7 +1,6 @@
 import asyncio
 import re
 from aiohttp import ClientSession
-from typing import Union
 
 
 class EpisodeFetcher:
@@ -12,9 +11,7 @@ class EpisodeFetcher:
     VID = ""
     PAGE_NUM = 30
 
-
     async def fetch_all(self, cid, vid):
-
         self.CID = cid
         self.VID = vid
 
@@ -25,12 +22,10 @@ class EpisodeFetcher:
         tasks = [self.get_episode(pageContext) for pageContext in pageContext_list]
         return await asyncio.gather(*tasks)
 
-
-
-    ''''
+    """'
     获取所有集数
-        num = 第几页
-    '''
+    """
+
     async def get_episode(self, pageContext):
         async with ClientSession() as session:
             try:
@@ -45,18 +40,22 @@ class EpisodeFetcher:
                         "lid": "",
                         "page_num": "",
                         "detail_page_type": "1",
-                        "page_context": pageContext
+                        "page_context": pageContext,
                     },
-                    "has_cache": 1
+                    "has_cache": 1,
                 }
 
-                async with session.post(self.BASE_URL, headers=self.HEADERS, params=self.PARAMS, json=json) as resp:
+                async with session.post(
+                    self.BASE_URL, headers=self.HEADERS, params=self.PARAMS, json=json
+                ) as resp:
 
                     response = await resp.json()
                     episodes = []
 
                     module_list_data = response["data"]["module_list_datas"][0]
-                    item_datas = module_list_data["module_datas"][0]["item_data_lists"]["item_datas"]
+                    item_datas = module_list_data["module_datas"][0]["item_data_lists"][
+                        "item_datas"
+                    ]
                     for item in item_datas:
                         item_params = item["item_params"]
 
@@ -72,11 +71,11 @@ class EpisodeFetcher:
                     return episodes
             except Exception:
                 return []
-            
 
-    ''''
+    """'
     获取分页参数
-    '''
+    """
+
     async def get_pageContext(self):
         async with ClientSession() as session:
             try:
@@ -91,16 +90,20 @@ class EpisodeFetcher:
                         "lid": "",
                         "page_num": "",
                         "detail_page_type": "1",
-                        "page_context": ""
+                        "page_context": "",
                     },
-                    "has_cache": 1
+                    "has_cache": 1,
                 }
 
-                async with session.post(self.BASE_URL, headers=self.HEADERS, params=self.PARAMS, json=json) as resp:
+                async with session.post(
+                    self.BASE_URL, headers=self.HEADERS, params=self.PARAMS, json=json
+                ) as resp:
 
                     response = await resp.json()
                     pageContext_list = []
-                    tabs = response["data"]["module_list_datas"][0]["module_datas"][0]["module_params"]["tabs"]
+                    tabs = response["data"]["module_list_datas"][0]["module_datas"][0][
+                        "module_params"
+                    ]["tabs"]
                     pageContext_list = re.findall('page_context":"(.*?)",', tabs)
                     return pageContext_list
             except Exception:

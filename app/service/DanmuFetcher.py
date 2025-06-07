@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 
 
 class DanmuFetcher:
-    
+
     # 间隔时间30秒
     TIME_OFFSET = 30000
     CONTENT_SCORE = 50
@@ -20,9 +20,7 @@ class DanmuFetcher:
             try:
                 BASE_URL = f"https://dm.video.qq.com/barrage/segment/{vid}/t/v1"
                 time_begin = time_end + self.TIME_OFFSET
-                async with session.get(
-                    f"{BASE_URL}/{time_end}/{time_begin}"
-                ) as resp:
+                async with session.get(f"{BASE_URL}/{time_end}/{time_begin}") as resp:
                     response = await resp.json()
                     barrages = []
 
@@ -32,7 +30,7 @@ class DanmuFetcher:
                         if filter:
                             score = int(item["content_score"])
                             content = item["content"]
-                            if score < self.CONTENT_SCORE or len(content) <=1:
+                            if score < self.CONTENT_SCORE or len(content) <= 1:
                                 continue
                         barrage = {}
                         barrage["up_count"] = item["up_count"]
@@ -45,4 +43,3 @@ class DanmuFetcher:
                     return barrages
             except Exception:
                 return []
-
