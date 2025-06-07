@@ -18,16 +18,11 @@ class EpisodeFetcher:
         self.CID = cid
         self.VID = vid
 
-        # 获取总集数
-        total_episodes = await self.get_total_episode()
-        countFor = ""
-        if int(total_episodes) % self.PAGE_NUM == 0:
-            countFor = int(total_episodes) // self.PAGE_NUM
-        else:
-            countFor = int(total_episodes) // self.PAGE_NUM + 1
+        # 获取所有分页参数
+        pageContext_list = await self.get_pageContext()
 
         # 批量获取集数
-        tasks = [self.get_episode(num) for num in range(countFor)]
+        tasks = [self.get_episode(pageContext) for pageContext in pageContext_list]
         return await asyncio.gather(*tasks)
 
 
@@ -36,16 +31,9 @@ class EpisodeFetcher:
     获取所有集数
         num = 第几页
     '''
-    async def get_episode(self, num):
+    async def get_episode(self, pageContext):
         async with ClientSession() as session:
             try:
-                pageContext = ""
-                
-                if num != 0:
-                    episode_begin = self.PAGE_NUM * num + 1
-                    episode_end = self.PAGE_NUM * (num + 1)
-                    pageContext = f"chapter_name=&cid={self.CID}&detail_page_type=1&episode_begin={episode_begin}&episode_end={episode_end}&episode_step={self.PAGE_NUM}&filter_rule_id=&id_type=1&is_nocopyright=false&is_skp_style=false&lid=&list_page_context=&mvl_strategy_id=&need_tab=1&order=&page_num={num}&page_size={self.PAGE_NUM}&req_from=web_vsite&req_from_second_type=&req_type=0&siteName=&tab_type=1&title_style=&ui_type=null&un_strategy_id=13dc6f30819942eb805250fb671fb082&watch_together_pay_status=0&year="
-                
                 json = {
                     "page_params": {
                         "req_from": "web_vsite",
@@ -87,9 +75,9 @@ class EpisodeFetcher:
             
 
     ''''
-    获取总集数
+    获取分页参数
     '''
-    async def get_total_episode(self):
+    async def get_pageContext(self):
         async with ClientSession() as session:
             try:
                 json = {
@@ -111,9 +99,9 @@ class EpisodeFetcher:
                 async with session.post(self.BASE_URL, headers=self.HEADERS, params=self.PARAMS, json=json) as resp:
 
                     response = await resp.json()
-                    # "sub_title": "VIP用户每周五10点更新1集，SVIP用户限时福利抢先1天看1集（每周四18:00）/更新至218集"
-                    sub_title = response["data"]["module_list_datas"][0]["module_datas"][0]["module_params"]["sub_title"]
-                    count = re.findall("更新至(.*?)集", sub_title)
-                    return count[0]
+                    pageContext_list = []
+                    tabs = response["data"]["module_list_datas"][0]["module_datas"][0]["module_params"]["tabs"]
+                    pageContext_list = re.findall('page_context":"(.*?)",', tabs)
+                    return pageContext_list
             except Exception:
                 return []

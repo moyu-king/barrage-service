@@ -12,14 +12,18 @@ class EpisodePayload(BaseModel):
     vid: Union[str, None]
     pageContext: Union[str, None] = None
 
-# 获取弹幕
-# duration 视频时长
+'''
+获取弹幕
+    duration 视频时长
+    vid 
+    filter 是否过滤弹幕 true | false
+'''
 @tencent_router.get("/barrage")
-async def tencent_barrage(duration: int):
+async def tencent_barrage(duration: int, vid: str, filter: bool):
     try:
         fetcher = DanmuFetcher()
         # 获取所有弹幕
-        danmus = await fetcher.fetch_all(duration * 2)
+        danmus = await fetcher.fetch_all(duration * 2, vid, filter)
         if not danmus:
             return JsonResponse.fail(messge='弹幕数据获取失败')
 
