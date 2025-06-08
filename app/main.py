@@ -1,10 +1,18 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.models.video import Video, db
 from app.service.tencent import tencent_router
 from app.models.resp import JsonResponse
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # 允许的方法
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
 
 # 路由分组
 app.include_router(tencent_router, prefix="/tencent", tags=["腾讯接口"])
