@@ -25,3 +25,29 @@ async def get_videos():
             return JsonResponse.success(data=list(Video.select().dicts()))
     except Exception:
         return JsonResponse.fail(message="服务器内部错误")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    import sys
+    import logging
+
+    # 配置日志
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)]
+    )
+
+    try:
+        logging.info("Starting FastAPI server...")
+        uvicorn.run(
+            "app.main:app",
+            host="0.0.0.0",
+            port=8000,
+            reload=False,
+            log_level="info"
+        )
+    except Exception as e:
+        logging.error(f"Failed to start server: {e}", exc_info=True)
+        input("Press Enter to exit...")
