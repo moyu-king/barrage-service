@@ -40,7 +40,7 @@ class EpisodeFetcher:
                         "lid": "",
                         "page_num": "",
                         "detail_page_type": "1",
-                        "page_context": pageContext,
+                        "page_context": pageContext["page_context"],
                     },
                     "has_cache": 1,
                 }
@@ -53,9 +53,8 @@ class EpisodeFetcher:
                     episodes = []
 
                     module_list_data = response["data"]["module_list_datas"][0]
-                    item_datas = module_list_data["module_datas"][0]["item_data_lists"][
-                        "item_datas"
-                    ]
+                    item_datas = module_list_data["module_datas"][0]["item_data_lists"]["item_datas"]
+
                     for item in item_datas:
                         item_params = item["item_params"]
 
@@ -66,6 +65,7 @@ class EpisodeFetcher:
                             episode["union_title"] = item_params["union_title"]
                             episode["title"] = item_params["title"]
                             episode["duration"] = item_params["duration"]
+                            episode["session"] = pageContext["session"]
                             episodes.append(episode)
 
                     return episodes
@@ -100,11 +100,22 @@ class EpisodeFetcher:
                 ) as resp:
 
                     response = await resp.json()
-                    pageContext_list = []
-                    tabs = response["data"]["module_list_datas"][0]["module_datas"][0][
-                        "module_params"
-                    ]["tabs"]
-                    pageContext_list = re.findall('page_context":"(.*?)",', tabs)
-                    return pageContext_list
+                    page_context_list = []
+                    module_data = response["data"]["module_list_datas"][0]["module_datas"][0]
+                    tabs = module_data["module_params"]["tabs"]
+
+                    if tabs:
+                        # 不分季度
+                        page_context_list = [{"page_context": item, "session": ''} for item in re.findall('page_context":"(.*?)",', tabs)]
+                    else:
+                        # 分季度
+                        item_datas = module_data["item_data_lists"]["item_datas"]
+
+                        for item in item_datas:
+                            params = item["item_params"]
+                            if params and params.get("page_context"):
+                                page_context_list.append({"page_context": params["page_context"], "session": params["title"]})
+
+                    return page_context_list
             except Exception:
                 return []
