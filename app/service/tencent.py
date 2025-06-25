@@ -38,7 +38,7 @@ async def tencent_barrage(duration: int, vid: str, filter: bool):
 
 
 # 获取集数
-@tencent_router.get("/episode/{id}")
+@tencent_router.get("/episode")
 async def tencent_episodes(id: int):
     try:
         video = Video.get_or_none(Video.id == id)
