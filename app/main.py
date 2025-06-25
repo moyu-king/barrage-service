@@ -9,7 +9,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # 允许的方法
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     )
 
     try:
-        logging.info("Starting FastAPI server...")
+        logging.info("正在启动弹幕服务...")
         uvicorn.run(
             "app.main:app",
             host="0.0.0.0",

@@ -27,3 +27,8 @@ uvicorn app.main:app
 | `--log-level`  | 日志级别，可选：`critical`, `error`, `warning`, `info`, `debug`, `trace` | `--log-level debug`          |
 | `--debug`      | 启用调试模式，输出更多错误信息               | `--debug`                   |
 | `--timeout-keep-alive` | 连接保持活动超时时间（秒）          | `--timeout-keep-alive 5`    |
+
+#### 4.打包成可执行文件.exe
+```bash
+pyinstaller barrage-service.spec
+```
