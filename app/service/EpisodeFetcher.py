@@ -65,7 +65,7 @@ class EpisodeFetcher:
                             episode["union_title"] = item_params["union_title"]
                             episode["title"] = item_params["title"]
                             episode["duration"] = item_params["duration"]
-                            episode["session"] = pageContext["session"]
+                            episode["season"] = pageContext["season"]
                             episodes.append(episode)
 
                     return episodes
@@ -106,7 +106,7 @@ class EpisodeFetcher:
 
                     if tabs:
                         # 不分季度
-                        page_context_list = [{"page_context": item, "session": ''} for item in re.findall('page_context":"(.*?)",', tabs)]
+                        page_context_list = [{"page_context": item, "season": ''} for item in re.findall('page_context":"(.*?)",', tabs)]
                     else:
                         # 分季度
                         item_datas = module_data["item_data_lists"]["item_datas"]
@@ -114,7 +114,7 @@ class EpisodeFetcher:
                         for item in item_datas:
                             params = item["item_params"]
                             if params and params.get("page_context"):
-                                page_context_list.append({"page_context": params["page_context"], "session": params["title"]})
+                                page_context_list.append({"page_context": params["page_context"], "season": params["title"]})
 
                     return page_context_list
             except Exception:
