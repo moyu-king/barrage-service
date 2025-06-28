@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, TypedDict
 
 class EpisodeField(TypedDict):
+    vid: str
     union_title: str
     title: str
     duration: int

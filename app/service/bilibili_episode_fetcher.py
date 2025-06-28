@@ -25,12 +25,12 @@ class BiliBiliEpisodeFetcher(EpisodeFetcher):
                   response = await resp.json()
                   result = response["result"]
                   episodes: list[EpisodeField] = [{
+                      "vid": item["cid"],  # B站的弹幕请需要cid，故将cid作为vid返回
                       "duration": item["duration"],
                       "season": "",
                       "title": item["title"],
                       "union_title": item["show_title"]} for item in result["episodes"]]
 
                   return episodes
-        except Exception as e:
-            print(e)
+        except Exception:
             return []

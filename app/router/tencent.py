@@ -1,3 +1,4 @@
+import math
 from fastapi import APIRouter
 from app.service.tencent_episode_fetcher import TencentEpisodeFetcher
 from app.service.tencent_barrage_fetcher import TencentBarrageFetcher
@@ -8,7 +9,7 @@ tencent_router = APIRouter()
 
 """
 获取弹幕
-    duration 视频时长
+    duration 视频时长 ms
     vid
     filter 是否过滤弹幕 true | false
 """
@@ -18,7 +19,7 @@ async def tencent_barrage(duration: int, vid: str, filter: bool):
     try:
         fetcher = TencentBarrageFetcher()
         # 获取所有弹幕
-        barrages = await fetcher.fetch_all(duration * 2, vid, filter)
+        barrages = await fetcher.fetch_all(math.ceil(duration / 1000 / 60), vid, filter)
         if not barrages:
             return JsonResponse.fail(message="弹幕数据获取失败")
 

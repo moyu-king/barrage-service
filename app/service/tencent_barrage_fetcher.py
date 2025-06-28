@@ -1,16 +1,18 @@
 import asyncio
 from aiohttp import ClientSession
-from app.service.interface import BarrageFetcher
+from app.service.interface import BarrageFetcher, BarrageField
 
 
 class TencentBarrageFetcher(BarrageFetcher):
     # 间隔时间30秒
     TIME_OFFSET = 30000
     CONTENT_SCORE = 50
-
-    async def fetch_all(self, duration: int, vid: str, filter: bool):
+    '''
+        duration: min
+    '''
+    async def fetch_all(self, duration, vid, filter):
         # 获取各个时间点
-        timestamps = [i * self.TIME_OFFSET for i in range(duration)]
+        timestamps = [i * self.TIME_OFFSET for i in range(duration * 2)]
         # 批量获取弹幕
         tasks = [self.fetch_one(time_end, vid, filter) for time_end in timestamps]
         return await asyncio.gather(*tasks)
@@ -32,11 +34,10 @@ class TencentBarrageFetcher(BarrageFetcher):
                             content = item["content"]
                             if score < self.CONTENT_SCORE or len(content) <= 1:
                                 continue
-                        barrage = {}
-                        barrage["up_count"] = item["up_count"]
-                        barrage["content_style"] = item["content_style"]
-                        barrage["content_score"] = item["content_score"]
-                        barrage["time_offset"] = item["time_offset"]
+                        barrage: BarrageField = {}
+                        barrage["style"] = item["content_style"]
+                        barrage["weight"] = item["content_score"]
+                        barrage["offset"] = int(item["time_offset"])
                         barrage["content"] = item["content"]
                         barrages.append(barrage)
 

@@ -60,11 +60,10 @@ class TencentEpisodeFetcher(EpisodeFetcher):
 
                         if "cid" in item_params:
                             episode = {}
-                            episode["cid"] = item_params["cid"]
                             episode["vid"] = item_params["vid"]
                             episode["union_title"] = item_params["union_title"]
                             episode["title"] = item_params["title"]
-                            episode["duration"] = item_params["duration"]
+                            episode["duration"] = int(item_params["duration"]) * 1000  # 统一转成ms
                             episode["season"] = pageContext["season"]
                             episodes.append(episode)
 

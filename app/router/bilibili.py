@@ -7,9 +7,9 @@ from app.models.video import Video
 bilibili_router = APIRouter()
 
 @bilibili_router.get('/barrage')
-async def bilibili_barrage():
+async def bilibili_barrage(duration: int, vid: str, filter: bool):
     fetcher = BiliBiliBarrageFetcher()
-    barrages = await fetcher.fetch_all()
+    barrages = await fetcher.fetch_all(duration, vid, filter)
 
     if not barrages:
         return JsonResponse.fail(message="弹幕数据获取失败")
