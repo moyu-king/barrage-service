@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from app.models.video import Video, db
-from app.service.tencent import tencent_router
+from app.router import tencent_router, bilibili_router, video_router
+from app.constant import Platform
+from aiohttp import ClientSession
 from app.models.resp import JsonResponse
 
 app = FastAPI()
@@ -16,16 +17,29 @@ app.add_middleware(
 
 # 路由分组
 app.include_router(tencent_router, prefix="/tencent", tags=["腾讯接口"])
-# app.include_router(bilibili.router, prefix="/bilibili", tags=["B战接口"])
+app.include_router(bilibili_router, prefix="/bilibili", tags=["bilibili接口"])
+app.include_router(video_router, prefix="/video", tags=["视频接口"])
 
-@app.get("/videos")
-async def get_videos():
+
+@app.api_route("/proxy/{path}", methods=["GET", "POST", "PUT", "DElETE"])
+async def proxy_router(request: Request, path: str, platform: int):
+    platform_path_map = {
+        Platform.TENCENT.value: 'tencent',
+        Platform.BILIBILI.value: 'bilibili'
+    }
+
     try:
-        with db.connection_context():
-            return JsonResponse.success(data=list(Video.select().dicts()))
-    except Exception:
-        return JsonResponse.fail(message="服务器内部错误")
-
+        async with ClientSession() as session:
+            async with session.request(
+                method=request.method,
+                url=f"{request.base_url}{platform_path_map[platform]}/{path}",
+                headers=dict(request.headers),
+                params=dict(request.query_params),
+                data=await request.body()
+            ) as resp:
+                return await resp.json()
+    except Exception as e:
+        return JsonResponse.fail(message=e)
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,9 +1,9 @@
 import asyncio
 import re
 from aiohttp import ClientSession
+from app.service.interface import EpisodeFetcher
 
-
-class EpisodeFetcher:
+class TencentEpisodeFetcher(EpisodeFetcher):
     BASE_URL = "https://pbaccess.video.qq.com/trpc.universal_backend_service.page_server_rpc.PageServer/GetPageData"
     HEADERS = {"referer": "https://v.qq.com"}
     PARAMS = {"video_appid": "3000010", "vplatform": 2, "vversion_name": "8.2.96"}
@@ -19,14 +19,14 @@ class EpisodeFetcher:
         pageContext_list = await self.get_pageContext()
 
         # 批量获取集数
-        tasks = [self.get_episode(pageContext) for pageContext in pageContext_list]
+        tasks = [self.fetch_one(pageContext) for pageContext in pageContext_list]
         return await asyncio.gather(*tasks)
 
     """'
     获取所有集数
     """
 
-    async def get_episode(self, pageContext):
+    async def fetch_one(self, pageContext):
         async with ClientSession() as session:
             try:
                 json = {

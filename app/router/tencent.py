@@ -1,19 +1,10 @@
-from typing import Union
 from fastapi import APIRouter
-from pydantic import BaseModel
-from app.service.DanmuFetcher import DanmuFetcher
-from app.service.EpisodeFetcher import EpisodeFetcher
+from app.service.tencent_episode_fetcher import TencentEpisodeFetcher
+from app.service.tencent_barrage_fetcher import TencentBarrageFetcher
 from app.models.resp import JsonResponse
 from app.models.video import Video
 
 tencent_router = APIRouter()
-
-
-class EpisodePayload(BaseModel):
-    cid: Union[str, None]
-    vid: Union[str, None]
-    pageContext: Union[str, None] = None
-
 
 """
 获取弹幕
@@ -25,13 +16,13 @@ class EpisodePayload(BaseModel):
 @tencent_router.get("/barrage")
 async def tencent_barrage(duration: int, vid: str, filter: bool):
     try:
-        fetcher = DanmuFetcher()
+        fetcher = TencentBarrageFetcher()
         # 获取所有弹幕
-        danmus = await fetcher.fetch_all(duration * 2, vid, filter)
-        if not danmus:
+        barrages = await fetcher.fetch_all(duration * 2, vid, filter)
+        if not barrages:
             return JsonResponse.fail(message="弹幕数据获取失败")
 
-        barrage_list = [item for sublist in danmus for item in sublist]
+        barrage_list = [item for sublist in barrages for item in sublist]
         return JsonResponse.success(message="成功", data=barrage_list)
     except Exception:
         return JsonResponse.fail(message="弹幕数据获取异常")
@@ -39,13 +30,13 @@ async def tencent_barrage(duration: int, vid: str, filter: bool):
 
 # 获取集数
 @tencent_router.get("/episode")
-async def tencent_episodes(id: int):
+async def tencent_episodes(vid: int):
     try:
-        video = Video.get_or_none(Video.id == id)
+        video = Video.get_or_none(Video.id == vid)
         if not video:
             return JsonResponse.fail(message="无效视频id")
 
-        fetcher = EpisodeFetcher()
+        fetcher = TencentEpisodeFetcher()
         # 获取所有集数
         params = video.params
         data = await fetcher.fetch_all(params["cid"], params["vid"])

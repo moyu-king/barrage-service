@@ -1,9 +1,9 @@
 import asyncio
 from aiohttp import ClientSession
+from app.service.interface import BarrageFetcher
 
 
-class DanmuFetcher:
-
+class TencentBarrageFetcher(BarrageFetcher):
     # 间隔时间30秒
     TIME_OFFSET = 30000
     CONTENT_SCORE = 50
@@ -12,10 +12,10 @@ class DanmuFetcher:
         # 获取各个时间点
         timestamps = [i * self.TIME_OFFSET for i in range(duration)]
         # 批量获取弹幕
-        tasks = [self.get_danmu(time_end, vid, filter) for time_end in timestamps]
+        tasks = [self.fetch_one(time_end, vid, filter) for time_end in timestamps]
         return await asyncio.gather(*tasks)
 
-    async def get_danmu(self, time_end: str, vid: str, filter: bool):
+    async def fetch_one(self, time_end: str, vid: str, filter: bool):
         async with ClientSession() as session:
             try:
                 BASE_URL = f"https://dm.video.qq.com/barrage/segment/{vid}/t/v1"
