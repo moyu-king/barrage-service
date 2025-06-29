@@ -7,7 +7,6 @@ anyio==4.9.0
 attrs==25.3.0
 click==8.2.1
 colorama==0.4.6
-fake-useragent==2.2.0
 fastapi==0.115.12
 frozenlist==1.6.0
 h11==0.16.0
@@ -19,6 +18,7 @@ peewee==3.18.1
 pefile==2023.2.7
 pillow==11.2.1
 propcache==0.3.1
+protobuf==6.31.1
 pydantic==2.11.5
 pydantic_core==2.33.2
 pyinstaller==6.14.1

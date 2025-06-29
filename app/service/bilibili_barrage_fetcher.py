@@ -1,9 +1,10 @@
 import math
+import random
 import asyncio
 from app.service.interface import BarrageFetcher
 from aiohttp import ClientSession
-from fake_useragent import UserAgent
 from app.proto.barrage_pb2 import BarrageSegMobi1eReply
+from app.constant import USER_AGENTS
 
 class BiliBiliBarrageFetcher(BarrageFetcher):
     BASE_URL = "https://api.bilibili.com/x/v2/dm/web/seg.so"
@@ -25,8 +26,7 @@ class BiliBiliBarrageFetcher(BarrageFetcher):
     """
     async def fetch_one(self, vid, segment_index: int, filter):
         async with ClientSession() as session:
-            ua = UserAgent()
-            headers = {"User-Agent": ua.random}
+            headers = {"User-Agent": random.choice(USER_AGENTS)}
             params = {"oid": vid, "segment_index": segment_index, "type": 1}
 
             async with session.get(self.BASE_URL, headers=headers, params=params) as resp:

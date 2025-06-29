@@ -1,7 +1,8 @@
+import random
 from app.service.interface import EpisodeFetcher, EpisodeField
 from typing import TypedDict
 from aiohttp import ClientSession
-from fake_useragent import UserAgent
+from app.constant import USER_AGENTS
 
 class FetchParam(TypedDict, total=False):
     season_id: int
@@ -18,8 +19,7 @@ class BiliBiliEpisodeFetcher(EpisodeFetcher):
         try:
           async with ClientSession() as session:
               params = {"season_id": season_id} if season_id else {"ep_id": ep_id}
-              ua = UserAgent()
-              headers = {"User-Agent": ua.random}
+              headers = {"User-Agent": random.choice(USER_AGENTS)}
 
               async with session.get(self.BASE_URL, params=params, headers=headers) as resp:
                   response = await resp.json()
