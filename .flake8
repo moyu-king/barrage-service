@@ -4,6 +4,7 @@ exclude =
     __pycache__,
     venv,
     tests/*,
-    docs/*
+    docs/*,
+    app/proto/*,
 
 ignore = E501,E111,E302
